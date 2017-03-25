@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>CS133 Awesome Project</title>
+
+{%from 'macros.html' import header as header%}
+
+{{header()}}
+
+
+</head>
+<body>
+{%from 'macros.html' import navbar_logged_out as navbar_logged_out%}
+
+{{navbar_logged_out()}}
+
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-xs-12" align="center">
+      <h1>Congratulations on registering {{name}}</h1>
+      <h2>You will recieve an email with a link to activate your account shortly</h2>
+    </div>
+  </div>
+</div>
+{%from 'macros.html' import scripts as scripts%}
+
+{{scripts()}}
+
+</body>
+    
+</html>

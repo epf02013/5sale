@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>CS133 Awesome Project</title>
+
+{%from 'macros.html' import header as header%}
+
+{{header()}}
+
+
+</head>
+<body>
+
+<script>
+  window.fbAsyncInit = function() {
+    FB.init({
+      appId      : '388419684859802',
+      cookie     : true,
+      xfbml      : true,
+      version    : 'v2.8'
+    });
+    FB.AppEvents.logPageView();   
+  };
+
+  (function(d, s, id){
+     var js, fjs = d.getElementsByTagName(s)[0];
+     if (d.getElementById(id)) {return;}
+     js = d.createElement(s); js.id = id;
+     js.src = "//connect.facebook.net/en_US/sdk.js";
+     fjs.parentNode.insertBefore(js, fjs);
+   }(document, 'script', 'facebook-jssdk'));
+</script>
+
+
+{%from 'macros.html' import navbar_logged_out as navbar_logged_out%}
+
+{{navbar_logged_out()}}
+
+<div class="container-fluid">
+  <div class="row">
+	<div class="col-xs-3" align="center">
+	</div>
+    <div class="col-xs-6" align="center">
+      {%from 'forms.html' import form as form%}
+      {{form(login_form.fields,login_form.error, login_form.title)}}
+      <fb:login-button 
+  scope="public_profile,email"
+  onlogin="checkLoginState();">
+</fb:login-button>
+    </div>
+    <div class="col-xs-3" align="center">
+	</div>
+  </div>
+</div>
+{%from 'macros.html' import scripts as scripts%}
+
+{{scripts()}}
+
+<script type="text/javascript">
+function checkLoginState(){
+  FB.getLoginStatus(function(response) {
+    if (response.status === 'connected') {
+      console.log(response.authResponse);
+      var info=response.authResponse;
+      FB.api('/me', {fields: 'first_name, last_name, email'}, function(response) {
+
+        for (var key in response) {
+          info[key]=response[key];
+        }
+         $.post("/fb_login",
+            info,
+            function(data, status){
+              console.log("pop");
+              $(location).attr('href', '/home')
+            });
+      });
+      }
+  });
+}
+</script>
+</body>
+    
+</html>

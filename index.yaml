@@ -1,0 +1,57 @@
+indexes:
+
+- kind: Message
+  ancestor: no
+  properties:
+  - name: time
+    direction: desc
+
+- kind: Message
+  properties:
+  - name: conversation
+  - name: time
+
+- kind: Conversation 
+  properties: 
+  - name: user1 
+  - name: time
+
+- kind: Conversation 
+  properties: 
+  - name: user2 
+  - name: time
+
+- kind: Conversation 
+  properties: 
+  - name: user1 
+  - name: time
+    direction: desc
+
+- kind: Conversation 
+  properties: 
+  - name: user2 
+  - name: time
+    direction: desc
+
+
+- kind: Notification 
+  properties: 
+  - name: user 
+  - name: time 
+    direction: desc
+  - name: time 
+    direction: asc
+
+
+- kind: Item
+  ancestor: no
+  properties:
+  - name: price
+    direction: desc
+  - name: price
+    direction: asc
+
+- kind: Offer 
+  properties: 
+  - name: item 
+  - name: amount

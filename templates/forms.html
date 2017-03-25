@@ -1,0 +1,45 @@
+  
+{%macro form(fields, error, title)%}
+  <form class="form-horizontal mid-form" method="post">
+    <fieldset>
+      <legend>{{title}}</legend>
+      {%if error%}
+        <div class="form-group">
+          <h4 for="error" class="col-md-12  text-danger" style="text-align:center;">{{error}}</h4>
+        </div>
+      {%endif%}
+
+      {%for field in fields%}
+        <div class="form-group">
+          <label for="{{field.name}}" class="col-md-2 control-label">{{field.title}}</label>
+
+          <div class="col-md-10">
+            {%if field.tag=="input"%}
+            <input type="{{field.the_type}}" class="form-control" name="{{field.name}}" id="{{field.identifier}}" placeholder="{{field.placeholder}}" {%if field.step%} step=".01" {%endif%}>
+            
+            {%elif field.tag=="textarea"%}
+              <textarea type="{{field.the_type}}" class="form-control" name="{{field.name}}" id="{{field.identifier}}" placeholder="{{field.placeholder}}"></textarea>
+            {%elif field.tag=="select"%}
+              <select class="form-control" name="{{field.name}}" id="{{field.identifier}}" placeholder="{{field.placeholder}}" >
+                {%for option in field.options%}
+                  <option val="{{option.value}}">{{option.name}}</option>
+                {%endfor%}
+              </select>
+            {%elif field.tag=="checkbox"%}
+              <div class="togglebutton">
+                <label>
+                  <input name="{{field.name}}" id="{{field.identifier}}" type="checkbox">
+                </label>
+              </div>
+            {%endif%}
+          </div>
+        </div>
+      {%endfor%}
+      <div class="form-group">
+        <div class="col-md-10 col-md-offset-2" style="text-align:left;">
+          <button type="submit" class="btn btn-primary">{{title}}</button>
+        </div>
+      </div>
+    </fieldset>    
+  </form>
+{%endmacro%}

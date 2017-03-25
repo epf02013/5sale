@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>CS133 Awesome Project</title>
+
+
+
+
+
+{%from 'macros.html' import header as header%}
+
+{{header()}}
+
+
+</head>
+<body>
+<div class="navbar clear">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <button type="button" class="btn navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse" id="menu" style=" height:30px;padding:0px;width: 40px!important; background-color: white">
+        <span class="iconn-bar the-top top-bottom"></span>
+          <span class="iconn-bar top"></span>
+          <span class="iconn-bar bottom"></span>
+          <span class="iconn-bar the-bottom top-bottom"></span>
+      </button>
+      <a class="navbar-brand" href="/">5Sale</a>
+    </div>
+    <div class="navbar-collapse collapse navbar-responsive-collapse">
+      <ul class="nav navbar-nav navbar-right">
+        <li><a href="/home"><span>Home</span></a></li>
+        <li class="active"><a href="/my_items">My Items</a></li> 
+        <li><a href="/post_item">Post Item</a></li> 
+        <li><a href="/view_conversations"> <i class="material-icons">message</i></a></li>
+        <li class="dropdown">
+          <a class="dropdown-toggle" data-toggle="dropdown" href="#">Notifications
+          <span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            {%for notification in notifications%}
+              <li><a href="/notifications/{{notification.key.id()}}">{{notification.body}}</a></li>
+            {%endfor%}
+          </ul>
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>
+<div class="nav-spacer"></div>
+
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-xs-3" align="center"></div>
+    <div class="col-xs-6" align="center">
+      <div class="item" data-item-id="{{item.item_id}}">
+          <div class="name">{{item.name}}</div>
+          <div class="description">{{item.description}}</div>
+          <div class="price">{{item.price}}</div>
+      </div>
+      {%for offer in offers%}
+        <div class="offer {{offer.key.id()}}">
+        {%if offer.accepted%}
+          <div class="banner success">Accepted Offer</div>
+        {%else%}
+          <div class="banner">Offer</div>
+        {%endif%}
+          <div class="group">
+            <label>Bidder</label>
+            <div class="member bidder">
+              {{offer.bidder_name}}
+            </div>
+          </div>
+          <div class="group">
+            <label>Message</label>
+            <div class="member message">
+              {{offer.message}}
+            </div>
+          </div>
+          <div class="group">
+            <label>Amount</label>
+            <div class="member amount">
+              {{offer.amount}}
+            </div>
+          </div>
+          {%if offer.accepted%}
+            <button onclick="confirm_sale('{{offer.key.id()}}')" class="btn btn-info confirm">Confirm Item Sale</button>
+            <button style="display: none;" onclick="accept_offer('{{offer.key.id()}}')" class="btn btn-info accept">Accept</button>
+          {%else%}
+            <button style="display: none;" onclick="confirm_sale('{{offer.key.id()}}')" class="btn btn-info confirm">Confirm Item Sale</button>
+            <button onclick="accept_offer('{{offer.key.id()}}')" class="btn btn-info accept">Accept</button>
+          {%endif%}
+          <button onclick="reject_offer('{{offer.key.id()}}')" class="btn btn-danger reject">Reject</button>
+        </div>
+      {%endfor%}
+    </div>
+    <div class="col-xs-3" align="center"></div>
+  </div>
+  
+</div>
+
+
+{%from 'macros.html' import scripts as scripts%}
+
+{{scripts()}}
+
+<script type="text/javascript">
+  function confirm_sale(offer_id) {
+    
+  }
+
+  function accept_offer(offer_id) {
+
+    $.post("/offers/"+offer_id,
+            {reason:"accept"},
+            function(data, status){
+              $(".offer."+offer_id+">.banner").addClass("accepted");
+              $(".offer."+offer_id+">button.accept").remove();
+              $(".offer."+offer_id+">button.confirm").show();
+    });
+  }
+  function reject_offer(offer_id) {
+    $(".offer."+offer_id+">.banner").addClass("accepted");
+    $(".offer."+offer_id+">button.accept").remove();
+    $(".offer."+offer_id+">button.confirm").show();
+  }
+
+</script>
+
+</body>
+    
+</html>

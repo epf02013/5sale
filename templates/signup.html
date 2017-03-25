@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>CS133 Awesome Project</title>
+
+{%from 'macros.html' import header as header%}
+
+{{header()}}
+
+
+</head>
+<body>
+{%from 'macros.html' import navbar_logged_out as navbar_logged_out%}
+
+{{navbar_logged_out()}}
+
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-xs-3" align="center">
+	</div>
+    <div class="col-xs-6" align="center">
+      {%from 'forms.html' import form as form%}
+      {{form(signup_form.fields, signup_form.error ,signup_form.title)}}
+    </div>
+    <div class="col-xs-3" align="center">
+	</div>
+  </div>
+</div>
+{%from 'macros.html' import scripts as scripts%}
+
+{{scripts()}}
+
+</body>
+    
+</html>
