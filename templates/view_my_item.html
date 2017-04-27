@@ -27,7 +27,7 @@
     </div>
     <div class="navbar-collapse collapse navbar-responsive-collapse">
       <ul class="nav navbar-nav navbar-right">
-        <li><a href="/home"><span>Home</span></a></li>
+        <li><a href="/home"><span>Browse</span></a></li>
         <li class="active"><a href="/my_items">My Items</a></li> 
         <li><a href="/post_item">Post Item</a></li> 
         <li><a href="/view_conversations"> <i class="material-icons">message</i></a></li>
@@ -48,50 +48,106 @@
 
 <div class="container-fluid">
   <div class="row">
-    <div class="col-xs-3" align="center"></div>
-    <div class="col-xs-6" align="center">
-      <div class="item" data-item-id="{{item.item_id}}">
-          <div class="name">{{item.name}}</div>
-          <div class="description">{{item.description}}</div>
-          <div class="price">{{item.price}}</div>
-      </div>
-      {%for offer in offers%}
-        <div class="offer {{offer.key.id()}}">
-        {%if offer.accepted%}
-          <div class="banner success">Accepted Offer</div>
-        {%else%}
-          <div class="banner">Offer</div>
-        {%endif%}
-          <div class="group">
-            <label>Bidder</label>
-            <div class="member bidder">
-              {{offer.bidder_name}}
-            </div>
-          </div>
-          <div class="group">
-            <label>Message</label>
-            <div class="member message">
-              {{offer.message}}
-            </div>
-          </div>
-          <div class="group">
-            <label>Amount</label>
-            <div class="member amount">
-              {{offer.amount}}
-            </div>
-          </div>
-          {%if offer.accepted%}
-            <button onclick="confirm_sale('{{offer.key.id()}}')" class="btn btn-info confirm">Confirm Item Sale</button>
-            <button style="display: none;" onclick="accept_offer('{{offer.key.id()}}')" class="btn btn-info accept">Accept</button>
-          {%else%}
-            <button style="display: none;" onclick="confirm_sale('{{offer.key.id()}}')" class="btn btn-info confirm">Confirm Item Sale</button>
-            <button onclick="accept_offer('{{offer.key.id()}}')" class="btn btn-info accept">Accept</button>
+    <div class="col-sm-1" align="center"></div>
+    <div class="col-sm-5" align="left">
+    <div class="row">
+      <div class="col-l-6">
+        <h3>{{item.name}}</h3>
+        <div class="item-no-click" data-item-id="{{item.key.id()}}"
+          {%if item.photo%}
+            style="background-image: url('/item_photo/{{item.key.id()}}');"
           {%endif%}
-          <button onclick="reject_offer('{{offer.key.id()}}')" class="btn btn-danger reject">Reject</button>
+        ><!-- 
+            <div class="name">{{item.name}}</div> -->
         </div>
-      {%endfor%}
+        <div class="item-tags">
+          {%for tag in tags%}
+            <a href="/search?query={{tag.tag}}"><span class="tag clickable">#{{tag.tag}}</span></a>
+          {%endfor%}
+        </div>
+        <form class="form-horizontal mid-form" method="post" enctype = "multipart/form-data">
+          <fieldset>
+            <div class="form-group">
+              <label for="tags" class="col-md-1 control-label" style="text-align: left!important;">Tags</label>
+              <div class="col-md-11">
+                <input type="text" class="form-control" name="tags" id="tags" placeholder="Enter descriptive words seperated by spaces." style="max-width: 250px;">
+                <button type="submit" class="btn btn-primary">Add Tag</button>
+              </div>
+            </div>
+          </fieldset>
+          
+        </form>
+        <button class="btn btn-warning" onclick="edit_item()">Edit</button>
+        <button class="btn btn-danger" onclick="delete_item('{{item.key.id()}}')">Delete Item</button>
+
+      </div>
+      <div class="col-l-6" style="height:100%;">
+        <div clas="spacing" style="height:56px;"></div>
+        <label class="col-l-4">Description</label>
+        <div class="col-l-8"><p>{{item.description}}</p></div>
+
+        {%if item.biddable%}
+          <label class="col-l-4">Highest Bid</label>
+          <div class="best-bid col-l-8">${{item.best_offer}} </div>
+          {%if item.best_offer < item.price%} 
+            <label class="col-l-4">Suggested Price</label>
+              <div class="price  col-l-8">${{item.price}}</div>
+            {%endif%}
+        {%else%}
+          <label class="col-l-4">Price</label>
+          <div class="price col-l-8">${{item.price}}</div>
+        {%endif%}
+      </div>
+
     </div>
-    <div class="col-xs-3" align="center"></div>
+
+
+      <div id="edit_item_div" hidden>
+        {%from 'forms.html' import form as form%}
+        {{form(item_form.fields,item_form.error, item_form.title, item_form.action,item_form.submit)}}
+      </div>
+    </div>
+    <div class="col-sm-5" align="left">
+      <h3>Offers</h3>
+      <div class="scrollable">
+        {%for offer in offers%}
+          <div class="offer {{offer.key.id()}}">
+          {%if offer.accepted%}
+            <div class="banner success">Accepted Offer</div>
+          {%else%}
+            <div class="banner">Offer</div>
+          {%endif%}
+            <div class="group">
+              <label>Bidder</label>
+              <div class="member bidder">
+                {{offer.bidder_name}}
+              </div>
+            </div>
+            <div class="group">
+              <label>Message</label>
+              <div class="member message">
+                {{offer.message}}
+              </div>
+            </div>
+            <div class="group">
+              <label>Amount</label>
+              <div class="member amount">
+                {{offer.amount}}
+              </div>
+            </div>
+            {%if offer.accepted%}
+              <button onclick="confirm_sale('{{offer.key.id()}}')" class="btn btn-info confirm">Confirm Item Sale</button>
+              <button style="display: none;" onclick="accept_offer('{{offer.key.id()}}')" class="btn btn-info accept">Accept</button>
+            {%else%}
+              <button style="display: none;" onclick="confirm_sale('{{offer.key.id()}}')" class="btn btn-info confirm">Confirm Item Sale</button>
+              <button onclick="accept_offer('{{offer.key.id()}}')" class="btn btn-info accept">Accept</button>
+            {%endif%}
+            <button onclick="reject_offer('{{offer.key.id()}}')" class="btn btn-danger reject">Reject</button>
+          </div>
+        {%endfor%}
+      </div>
+    </div>
+    <div class="col-sm-1" align="center"></div>
   </div>
   
 </div>
@@ -103,7 +159,11 @@
 
 <script type="text/javascript">
   function confirm_sale(offer_id) {
-    
+    $.post("/offers/"+offer_id,
+            {reason:"confirm"},
+            function(data, status){
+              $(location).attr('href', '/history');
+    });
   }
 
   function accept_offer(offer_id) {
@@ -112,14 +172,29 @@
             {reason:"accept"},
             function(data, status){
               $(".offer."+offer_id+">.banner").addClass("accepted");
-              $(".offer."+offer_id+">button.accept").remove();
+              $(".offer."+offer_id+">button.accept").hide();
               $(".offer."+offer_id+">button.confirm").show();
     });
   }
   function reject_offer(offer_id) {
-    $(".offer."+offer_id+">.banner").addClass("accepted");
-    $(".offer."+offer_id+">button.accept").remove();
-    $(".offer."+offer_id+">button.confirm").show();
+    $.post("/offers/"+offer_id,
+            {reason:"reject"},
+            function(data, status){
+              $(".offer."+offer_id).remove();
+    });
+  }
+
+  function edit_item() {
+    $(".item").hide();
+    $("#edit_item_div").show();
+  }
+
+  function delete_item(item_id) {
+    $.post("/delete_item/"+item_id,
+            {reason:"accept"},
+            function(data, status){
+              $(location).attr('href', '/my_items');
+    });
   }
 
 </script>

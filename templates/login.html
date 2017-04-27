@@ -41,8 +41,6 @@
 	<div class="col-xs-3" align="center">
 	</div>
     <div class="col-xs-6" align="center">
-      {%from 'forms.html' import form as form%}
-      {{form(login_form.fields,login_form.error, login_form.title)}}
       <fb:login-button 
   scope="public_profile,email"
   onlogin="checkLoginState();">

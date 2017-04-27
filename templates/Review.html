@@ -1,0 +1,10 @@
+<div class="review" id="review_{{review.key.id()}}" data-item-id="{{review.key.id()}}">
+    <div class="rating">{{review.rating}}</div>
+    <div class="reason">{{review.reason}}</div>
+    <div class="datetime">{{review.time}}</div>
+    {%if remove%} 
+    	<button onclick="remove_review('{{review.key.id()}}');" class="btn btn-danger">Delete</button>
+    {%else%}
+    	<button onclick="flag_review('{{review.key.id()}}');" class="btn btn-danger">Flag</button>
+    {%endif%}
+</div>

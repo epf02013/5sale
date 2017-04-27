@@ -27,7 +27,7 @@
     </div>
     <div class="navbar-collapse collapse navbar-responsive-collapse">
       <ul class="nav navbar-nav navbar-right">
-        <li><a href="/home"><span>Home</span></a></li>
+        <li><a href="/home"><span>Browse</span></a></li>
         <li><a href="/my_items">My Items</a></li> 
         <li><a href="/post_item">Post Item</a></li>
         <li class="active"><a href="/view_conversations"> <i class="material-icons">message</i></a></li>
@@ -49,7 +49,7 @@
 <div class="container-fluid">
   <div class="row">
     <div class="col-xs-1"></div>
-    <div class="col-xs-10" align="center">
+    <div class="col-xs-10" align="left">
       <div class="conversation-box">
         {%if session.user_id==conversation.user1%}
           <div class="name sale">Sale of {{conversation.item_name}}</div>
@@ -59,17 +59,22 @@
         <div class="messages">
           {%for message in messages%}
             {%if session.user_id==message.sender%}
+              <div align="right">
                <div class="message sent">
                  {{message.body}}
                </div>
-             {%else%}
+              </div>
+            {%else%}
+              <div align="left">
                <div class="message received">
                  {{message.body}}
                </div>
+              </div>
             {%endif%}
           {%endfor%}
         </div>
-        
+        <textarea class="type-message" id="type_message"></textarea>
+        <button class="btn btn-info" onclick="send_message();">Send Messsage</button>
       </div>
     </div>
     <div class="col-xs-1"></div>
@@ -83,7 +88,18 @@
 
 {{scripts()}}
 
-{{conversation.key.id()}}
 </body>
+
+<script type="text/javascript">
+  function send_message() {
+    $.post("/messages",
+            {conversation:"{{conversation.key.id()}}",message_body:$("#type_message").val()},
+            function(data, status){
+              $(".messages").append("<div align='right'><div class='message sent'>"+$("#type_message").val()+"</div></div>");
+              $("#type_message").val("");
+              
+    });
+  }
+</script>
     
 </html>

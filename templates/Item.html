@@ -1,0 +1,82 @@
+
+{%if not detailed%}
+<div class="item clickable" data-item-id="{{item.key.id()}}"
+	{%if item.photo%}
+	    style="background-image: url('/item_photo/{{item.key.id()}}');"
+	{%endif%}
+	>
+	    <div class="name">{{item.name}}</div>
+
+
+	{%if item.biddable%}
+    	<div class="best-bid">Highest Bid:${{item.best_offer}} </div>
+    	{%if item.best_offer < item.price%} 
+	    	<div class="price">Suggested Price:${{item.price}}</div>
+	    {%endif%}
+    {%else%}
+    	<div class="price">Price:${{item.price}}</div>
+    {%endif%}
+</div>
+
+{%else %}
+<!--
+<div class="detailed-item well" data-item-id="{{item.item_id}}">
+	<div class="row">
+
+		<div class="col-xs-6">
+			<div class="item" data-item-id="{{item.item_id}}"
+				{%if item.photo%}
+				    style="background-image: url('/item_photo/{{item.key.id()}}');"
+				{%endif%}
+				>
+				    <div class="name">{{item.name}}</div>
+
+
+				{%if item.biddable%}
+			    	<div class="best-bid">Highest Bid:${{item.best_offer}} </div>
+			    {%else%}
+			    	<div class="price">Price:${{item.price}}</div>
+			    {%endif%}
+			</div>
+		</div>
+		<div class="col-xs-6" align="left">
+			<label>Description</label>
+			<p>{{item.description}}</p>
+		</div>
+	</div>
+</div> -->
+
+<div class="detailed-item" data-item-id="{{item.key.id()}}">
+	<div class="name" >{{item.name}}</div>
+	<label>Photo</label>
+	<div class="photo" style="background-image: url('/item_photo/{{item.key.id()}}');"></div>
+	<div class="item-tags">
+        {%for tag in tags%}
+  	    	<a href="/search?query={{tag.tag}}"><span class="tag clickable">#{{tag.tag}}</span></a>
+        {%endfor%}
+    </div>
+	<label class="col-md-4">Description</label>
+	<div class="col-md-8"><p>{{item.description}}</p></div>
+
+	{%if item.biddable%}
+		<label class="col-md-4">Highest Bid</label>
+		<div class="best-bid col-md-8">${{item.best_offer}} </div>
+		{%if item.best_offer < item.price%} 
+			<label class="col-md-4">Suggested Price</label>
+	    	<div class="price  col-md-8">${{item.price}}</div>
+	    {%endif%}
+	{%else%}
+		<label class="col-md-4">Price</label>
+		<div class="price col-md-8">${{item.price}}</div>
+	{%endif%}
+
+	{%if mine%}
+	<button class="btn btn-warning" onclick="edit_item()">Edit</button>
+    <button class="btn btn-danger" onclick="delete_item('{{item.key.id()}}')">Delete Item</button>
+    {%else%}
+    	<label>Seller</label>
+    	<button onclick="display_user(event,'{{item.seller_id}}')" class="seller btn btn-info">{{item.seller_name}}</button>
+    {%endif%}
+</div>
+
+{%endif%}

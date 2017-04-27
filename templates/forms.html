@@ -1,6 +1,9 @@
   
-{%macro form(fields, error, title)%}
-  <form class="form-horizontal mid-form" method="post">
+{%macro form(fields, error, title, action, submit)%}
+  <form class="form-horizontal mid-form" method="post" 
+    {%if action%}
+      action="{{action}}"
+    {%endif%} enctype = "multipart/form-data">
     <fieldset>
       <legend>{{title}}</legend>
       {%if error%}
@@ -11,24 +14,36 @@
 
       {%for field in fields%}
         <div class="form-group">
-          <label for="{{field.name}}" class="col-md-2 control-label">{{field.title}}</label>
+          {%if field.hidden==""%}
+            <label for="{{field.name}}" class="col-md-2 control-label">{{field.title}}</label>
+          {%endif%}
 
           <div class="col-md-10">
             {%if field.tag=="input"%}
-            <input type="{{field.the_type}}" class="form-control" name="{{field.name}}" id="{{field.identifier}}" placeholder="{{field.placeholder}}" {%if field.step%} step=".01" {%endif%}>
-            
+
+            <input type="{{field.the_type}}" class="form-control" name="{{field.name}}" id="{{field.identifier}}" placeholder="{{field.placeholder}}" {%if field.step%} step=".01" {%endif%}
+            value="{{field.value}}" {{field.hidden}}
+            >
+            {%elif field.tag=="file"%}
+            <input type="text" readonly="" class="form-control" placeholder="Browse...">
+            <input type="file" id="{{field.identifier}}" name="{{field.name}}" multiple="">
+
             {%elif field.tag=="textarea"%}
-              <textarea type="{{field.the_type}}" class="form-control" name="{{field.name}}" id="{{field.identifier}}" placeholder="{{field.placeholder}}"></textarea>
+              <textarea type="{{field.the_type}}" class="form-control" name="{{field.name}}" id="{{field.identifier}}" placeholder="{{field.placeholder}}">{{field.value}}</textarea>
             {%elif field.tag=="select"%}
               <select class="form-control" name="{{field.name}}" id="{{field.identifier}}" placeholder="{{field.placeholder}}" >
                 {%for option in field.options%}
-                  <option val="{{option.value}}">{{option.name}}</option>
+                  <option val="{{option.value}}" 
+                    {%if option.value== field.value%}
+                      selected="selected" 
+                    {%endif%}
+                  >{{option.name}}</option>
                 {%endfor%}
               </select>
             {%elif field.tag=="checkbox"%}
               <div class="togglebutton">
                 <label>
-                  <input name="{{field.name}}" id="{{field.identifier}}" type="checkbox">
+                  <input name="{{field.name}}" id="{{field.identifier}}" type="checkbox" {{field.value}}>
                 </label>
               </div>
             {%endif%}
@@ -37,7 +52,7 @@
       {%endfor%}
       <div class="form-group">
         <div class="col-md-10 col-md-offset-2" style="text-align:left;">
-          <button type="submit" class="btn btn-primary">{{title}}</button>
+          <button type="submit" class="btn btn-primary">{{submit}}</button>
         </div>
       </div>
     </fieldset>    

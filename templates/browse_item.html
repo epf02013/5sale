@@ -27,16 +27,22 @@
     </div>
     <div class="navbar-collapse collapse navbar-responsive-collapse">
       <ul class="nav navbar-nav navbar-right">
-        <li><a href="/home"><span>Home</span></a></li>
+        <li class="active"><a href="/home"><span>Browse</span></a></li>
         <li><a href="/my_items">My Items</a></li> 
-        <li class="active"><a href="/post_item">Post Item</a></li>
+        <li><a href="/post_item">Post Item</a></li>
         <li><a href="/view_conversations"> <i class="material-icons">message</i></a></li>
         <li class="dropdown">
           <a class="dropdown-toggle" data-toggle="dropdown" href="#">Notifications
           <span class="caret"></span></a>
           <ul class="dropdown-menu">
             {%for notification in notifications%}
-              <li><a href="/notifications/{{notification.key.id()}}">{{notification.body}}</a></li>
+              <li>
+                <a href="/notifications/{{notification.key.id()}}">
+                  <div class="notification-div">
+                    {{notification.body}}
+                  </div>
+                </a>
+              </li>
             {%endfor%}
           </ul>
         </li> 
@@ -48,23 +54,54 @@
 
 <div class="container-fluid">
   <div class="row">
-    <div class="col-xs-3" align="center"></div>
-    <div class="col-xs-6" align="center">
-      <div class="item" data-item-id="{{item.item_id}}">
-          <div class="name">{{item.name}}</div>
-          <div class="description">{{item.description}}</div>
-          <div class="price">{{item.price}}</div>
+    <div class="col-xs-2" align="center"></div>
+    <div class="col-xs-8" align="left">
+      <div class="row">
+        <div class="col-md-6">
+          <h3>{{item.name}}</h3>
+          <div class="item-no-click" data-item-id="{{item.key.id()}}"
+            {%if item.photo%}
+              style="background-image: url('/item_photo/{{item.key.id()}}');"
+            {%endif%}
+          ><!-- 
+              <div class="name">{{item.name}}</div> -->
+          </div>
+          <div class="item-tags">
+            {%for tag in tags%}
+              <a href="/search?query={{tag.tag}}"><span class="tag clickable">#{{tag.tag}}</span></a>
+            {%endfor%}
+          </div>
+        </div>
+        <div class="col-md-6" style="height:100%;">
+          <div clas="spacing" style="height:56px;"></div>
+          <label class="col-l-4">Description</label>
+          <div class="col-l-8"><p>{{item.description}}</p></div>
+          <label>Seller</label>
+          <button onclick="display_user(event,'{{item.seller_id}}')" class="seller btn btn-info">{{item.seller_name}}</button>        
+          {%if item.biddable%}
+            <label class="col-l-4">Highest Bid</label>
+            <div class="best-bid col-l-8">${{item.best_offer}} </div>
+            {%if item.best_offer < item.price%} 
+              <label class="col-l-4">Suggested Price</label>
+                <div class="price  col-l-8">${{item.price}}</div>
+              {%endif%}
+          {%else%}
+            <label class="col-l-4">Price</label>
+            <div class="price col-l-8">${{item.price}}</div>
+          {%endif%}
+        </div>
+
       </div>
       {%if was_previous_offer%}
-        <h3>Previous Offer</h5>
-        {%if not offer.accepted%}
-          <h5>Making A New Offer Will Replace This One</h5>
-        {%endif%}
+        <h3>Previous Offer<br>
+          {%if not offer.accepted%}
+            <span style="font-size: 10px;">(Making A New Offer Will Replace This One)</span>
+          {%endif%}
+        </h3>
         <div class="offer">
           {%if offer.accepted%}
-            <div class="banner success">Accepted Offer</div>
+            <div class="banner success">Accepted</div>
           {%else%}
-            <div class="banner">Offer</div>
           {%endif%}
           <div class="group">
             <label>Message</label>
@@ -85,14 +122,14 @@
       {%if was_previous_offer%} 
         {%if not offer.accepted%}
           {%from 'forms.html' import form as form%}
-          {{form(bid_form.fields,bid_form.error, bid_form.title)}}
+          {{form(bid_form.fields,bid_form.error, bid_form.title,"", bid_form.submit)}}
         {%endif%}
       {%else%}
         {%from 'forms.html' import form as form%}
-        {{form(bid_form.fields,bid_form.error, bid_form.title)}}
+        {{form(bid_form.fields,bid_form.error, bid_form.title,"", bid_form.submit)}}
       {%endif%}
     </div>
-    <div class="col-xs-3" align="center"></div>
+    <div class="col-xs-2" align="center"></div>
   </div>
   
 </div>

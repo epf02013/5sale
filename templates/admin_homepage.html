@@ -27,16 +27,16 @@
     </div>
     <div class="navbar-collapse collapse navbar-responsive-collapse">
       <ul class="nav navbar-nav navbar-right">
-        <li><a href="/home"><span>Browse</span></a></li>
-        <li class="active"><a href="/my_items">My Items</a></li> 
-        <li><a href="/post_item">Post Item</a></li> 
+        <li class="active"><a href="/home"><span>Browse</span></a></li>
+        <li><a href="/my_items">My Items</a></li> 
+        <li><a href="/post_item">Post Item</a></li>
         <li><a href="/view_conversations"> <i class="material-icons">message</i></a></li>
         <li class="dropdown">
           <a class="dropdown-toggle" data-toggle="dropdown" href="#">Notifications
           <span class="caret"></span></a>
-          <ul class="dropdown-menu">
+          <ul class="dropdown-menu" style="word-wrap: break-word;">
             {%for notification in notifications%}
-              <li><a href="/notifications/{{notification.key.id()}}">{{notification.body}}</a></li>
+              <li><a  href="/notifications/{{notification.key.id()}}">{{notification.body}}</a></li>
             {%endfor%}
           </ul>
         </li>
@@ -49,11 +49,30 @@
 <div class="container-fluid">
   <div class="row">
     <div class="col-xs-1"></div>
-    <div class="col-xs-10" align="center">
-      {%for item in items%}
-        {{item.display(mine=True)}}
-      {%endfor%}
+    <div class="col-xs-5" align="left">
+      <h3>Current Categories</h3>
+      <div class="scrollable mid">
+        <ul>
+          {%for category in categories%}
+            <li class="category-list" data-category-id="{{category.categoryID}}">
+              {{category.name}} <!--<button class="btn btn-danger">Remove Category</button>-->
+            </li>
+          {%endfor%}  
+        </ul>
+      </div>
+      {%from 'forms.html' import form as form%}
+      {{form(category_form.fields,category_form.error, category_form.title)}}
+
     </div>
+    <div class="col-xs-5">
+      <h3>Flagged Reviews</h3>
+      <div class="scrollable mid">
+          {%for review in reviews%}
+            {{review.display(remove=True)}}
+          {%endfor%}  
+      </div>
+    </div>
+
     <div class="col-xs-1"></div>
     
   </div>
@@ -66,8 +85,8 @@
 {{scripts()}}
 
 <script type="text/javascript">
-  $(".item").on("click", function(e){
-    $(location).attr('href', '/my_items/'+$(this).data("item-id"));
+  $(".category").on("click", function(e){
+    $(location).attr('href', '/browse/'+$(this).data("category-id"));
   });
 </script>
 </body>

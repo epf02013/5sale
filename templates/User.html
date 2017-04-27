@@ -1,0 +1,14 @@
+<div class="user" data-item-id="{{user.key.id()}}">
+    <div class="name">{{user.name}}</div>
+    <div class="rating">{{user.rating}}</div>
+    <div class="num-ratings">{{user.number_ratings}}</div>
+   	{%from 'forms.html' import form as form%}
+   	{{form(user_form.fields,user_form.error, user_form.title, user_form.action)}}
+    <div class="reviews-div">
+    	<h4>Recent Reviews</h4>
+    	{%for review in reviews%}
+    		{{review.display()}}
+    	{%endfor%}
+
+    </div>
+</div>

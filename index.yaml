@@ -55,3 +55,15 @@ indexes:
   properties: 
   - name: item 
   - name: amount
+
+- kind: Offer
+  properties:
+  - name: item
+  - name: bidder
+
+
+- kind: Review 
+  properties: 
+  - name: user 
+  - name: time 
+    direction: desc

@@ -11,6 +11,29 @@ $(document).ready(function(){
 	$(".category").height($(".category").width());
 });
 
+function display_user(e,user_id) {
+	e.stopPropagation();
+	console.log("pop");
+	$(location).attr('href', '/user/'+user_id);
+}
+function flag_review(review_id) {
+	$.post("/reviews/"+review_id,
+            {reason:"flag"},
+            function(data, status){
+              console.log("flagged");
+              alert("Review Flagged");
+    });
+}
+function remove_review(review_id) {
+	$.post("/reviews/"+review_id,
+            {reason:"remove"},
+            function(data, status){
+            	$("#review_"+review_id).remove();
+    });
+}
+
+
+
 // var dragging=false;
 // var col=-1;
 // var start_row=-1;

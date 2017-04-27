@@ -1,0 +1,13 @@
+<tr>
+	<td>
+		<div class="item clickable" data-item-id="{{item.key.id()}}"
+			{%if item.photo%}
+			    style="background-image: url('/item_photo/{{item.key.id()}}');"
+			{%endif%}
+			>
+			    <div class="name">{{item.name}}</div>
+		</div>
+	</td>
+	<td>{{item.get_amount()}}</td>
+	<td>{{item.get_pretty_date_time()}}</td>
+</tr>
