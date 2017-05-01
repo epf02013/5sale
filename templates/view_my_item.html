@@ -36,9 +36,15 @@
           <span class="caret"></span></a>
           <ul class="dropdown-menu">
             {%for notification in notifications%}
-              <li><a href="/notifications/{{notification.key.id()}}">{{notification.body}}</a></li>
+              {{notification.display()}}
             {%endfor%}
           </ul>
+        </li>
+        <li>
+          <a href="/me">ME</a>
+        </li>
+        <li>
+          <a href="/logout">Logout</a>
         </li>
       </ul>
     </div>
@@ -119,9 +125,7 @@
           {%endif%}
             <div class="group">
               <label>Bidder</label>
-              <div class="member bidder">
-                {{offer.bidder_name}}
-              </div>
+              <button onclick="display_user(event,'{{offer.bidder}}')" class="seller btn btn-info">{{offer.bidder_name}}</button> 
             </div>
             <div class="group">
               <label>Message</label>
@@ -162,7 +166,7 @@
     $.post("/offers/"+offer_id,
             {reason:"confirm"},
             function(data, status){
-              $(location).attr('href', '/history');
+              $(location).attr('href', '/me');
     });
   }
 

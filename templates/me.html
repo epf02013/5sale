@@ -29,7 +29,7 @@
       <ul class="nav navbar-nav navbar-right">
         <li><a href="/home"><span>Browse</span></a></li>
         <li><a href="/my_items">My Items</a></li> 
-        <li class="active"><a href="/post_item">Post Item</a></li> 
+        <li><a href="/post_item">Post Item</a></li> 
         <li><a href="/view_conversations"> <i class="material-icons">message</i></a></li>
         <li class="dropdown">
           <a class="dropdown-toggle" data-toggle="dropdown" href="#">Notifications
@@ -39,8 +39,8 @@
               {{notification.display()}}
             {%endfor%}
           </ul>
-        </li> 
-        <li>
+        </li>
+        <li class="active">
           <a href="/me">ME</a>
         </li>
         <li>
@@ -54,12 +54,29 @@
 
 <div class="container-fluid">
   <div class="row">
-    <div class="col-xs-3" align="center"></div>
-    <div class="col-xs-6" align="center">
-      {%from 'forms.html' import form as form%}
-      {{form(item_form.fields,item_form.error, item_form.title, "", item_form.submit)}}
+    <div class="col-xs-1"></div>
+    <div class="col-xs-9" align="center">
+      {{user.display()}}
     </div>
-    <div class="col-xs-3" align="center"></div>
+    <div class="col-xs-1"><button class="btn btn-info" onclick="clear_notifications();">Clear Notifications</button></div>
+    <div class="col-xs-1"></div>
+    
+  </div>
+  <div class="row">
+    <div class="col-xs-1"></div>
+    <div class="col-xs-5" align="left">
+      <h3 align="left">Sold Items</h3>
+      {%for offer in sold_offers%}
+        {{offer.display()}}
+      {%endfor%}
+    </div>
+    <div class="col-xs-5" align="left">
+      <h3 align="left">Purchased Items</h3>
+      {%for offer in purchased_offers%}
+        {{offer.display()}}
+      {%endfor%}
+    </div>
+    <div class="col-xs-1"></div>
   </div>
   
 </div>
@@ -69,6 +86,11 @@
 
 {{scripts()}}
 
+<script type="text/javascript">
+  $(".item").on("click", function(e){
+    $(location).attr('href', '/my_items/'+$(this).data("item-id"));
+  });
+</script>
 </body>
     
 </html>

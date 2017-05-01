@@ -144,6 +144,7 @@ class Message(ndb.Model) :
     body=ndb.StringProperty()
     time=ndb.DateTimeProperty(auto_now_add=True)
     conversation=ndb.IntegerProperty()
+    link=ndb.StringProperty()
 
 class Notification(ndb.Model) :
     user=ndb.StringProperty()
@@ -153,6 +154,7 @@ class Notification(ndb.Model) :
     item_category=ndb.StringProperty()
     time=ndb.DateTimeProperty(auto_now_add=True)
     noticed=ndb.BooleanProperty()
+    link=ndb.StringProperty()
 
     def display(self):
         return Markup(render_template("Notification.html", notification=self))
@@ -175,6 +177,7 @@ class Offer(ndb.Model) :
     message=ndb.TextProperty()
     bidder=ndb.StringProperty()
     item=ndb.IntegerProperty()
+    item_name=ndb.StringProperty()
     bidder_name=ndb.StringProperty()
     accepted=ndb.BooleanProperty()
     confirmed=ndb.BooleanProperty()

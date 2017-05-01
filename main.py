@@ -34,7 +34,7 @@ def check_login():
 @app.route('/')
 def splash():
     """Return a friendly HTTP greeting."""
-    return "splash!"
+    return home()
 
 
 @app.route("/create_admins")
@@ -53,7 +53,7 @@ def create_admins():
 @app.route('/logout')
 def logout():
     session.clear()
-    return "logged out"
+    return login()
 
 # @app.route("/notifications/<notification_id>")
 # def notifications(item_id) :
@@ -66,6 +66,14 @@ def logout():
 #     rejected-offer
 #     item-removed
 
+@app.route("/clear_notifications", methods=["GET", "POST"])
+def clear_notifications() :
+    if not session.get("logged_in"):
+        return "error", 500
+    notifications=Notification.query(Notification.user==session["user_id"])
+    for notification in notifications :
+        notification.key.delete()
+    return "success"
 @app.route("/search")
 def search() :
     if not session.get("logged_in"):
@@ -248,7 +256,33 @@ def view_user(user_id) :
         update_user_rating(user_id,int(request.form["rating"]))
 
     return render_template("view_user.html", user=user)
+@app.route("/me", methods=["GET", "POST"])
+def view_me() :
 
+
+
+    user=User.get_by_id(session["user_id"])
+
+    if request.method=="POST" :
+        return render_template("tsktsk.html")
+        review=Review(rating=int(request.form["rating"]),
+                      reason=request.form["reason"],
+                      user=user_id,
+                      reviewer=session["user_id"],
+                      flagged=False)
+        review.put()
+
+        update_user_rating(user_id,int(request.form["rating"]))
+
+    sold_offers=[]
+    sold_items=Item.query(Item.seller_id==session["user_id"],Item.sold==True)
+    for item in sold_items :
+        temp_offer=Offer.query(Offer.item==item.key.id()).get()
+        sold_offers.append(temp_offer)
+
+    purchased_offers=Offer.query(Offer.confirmed==True, Offer.bidder==session["user_id"])
+    notifications=Notification.query(Notification.user==session["user_id"]).order(-Notification.time)
+    return render_template("me.html", user=user,sold_offers=sold_offers,purchased_offers=purchased_offers,notifications=notifications)
 
 @app.route("/my_items")
 def my_items() :
@@ -256,14 +290,19 @@ def my_items() :
         return login()
 
 
-    items=Item.query(Item.seller_id==session.get("user_id"))
+    items=Item.query(Item.seller_id==session.get("user_id"), Item.sold==False)
 
     for item in items :
         item.item_id=item.key.id()
 
     notifications=Notification.query(Notification.user==session["user_id"]).order(-Notification.time)
 
-    return render_template("my_items.html", items=items)
+    offers=Offer.query(Offer.bidder==session['user_id'], Offer.confirmed==False)
+
+    return render_template("my_items.html", 
+                            items=items, 
+                            notifications=notifications,
+                            offers=offers)
 
 
 
@@ -283,7 +322,7 @@ def delete_item(item_id):
     previous_notifications=Notification.query(Notification.item==item_id)
     
 
-    notification_body=item.name+" was removed by seller."
+    notification_body=item.name+" removed"
     for prev_not in previous_notifications :
 
         notification=Notification(user=prev_not.user,
@@ -291,7 +330,8 @@ def delete_item(item_id):
                                   ntype="item-removed",
                                   item=item.key.id(),
                                   item_category=item.category,
-                                  noticed=False)
+                                  noticed=False,
+                                  link="/browse/"+item.category)
         notification.put()
         prev_not.key.delete()
 
@@ -328,6 +368,8 @@ def offers(offer_id) :
         return "oops", 404
     offer_id=int(offer_id)
     offer=Offer.get_by_id(offer_id)
+    if not offer :
+        return page_was_not_found("Offer has been removed")
     item=Item.get_by_id(offer.item)
 
     if request.form["reason"]=="accept" :
@@ -348,7 +390,8 @@ def offers(offer_id) :
                                   ntype="accepted-offer",
                                   item=item.key.id(),
                                   item_category=item.category,
-                                  noticed=False)
+                                  noticed=False,
+                                  link="/browse_item/"+str(item.key.id()))
         notification.put()
 
         conversation=Conversation(user1=session["user_id"],
@@ -379,13 +422,14 @@ def offers(offer_id) :
                                                  Notification.ntype=="accepted-offer").get()
         if previous_notification :
             previous_notification.key.delete()
-        notification_body=session["first_name"]+" "+session["last_name"]+" has rejected your offer for their "+item.name+" posting."
+        notification_body="Offer Rejected:"+item.name
         notification=Notification(user=offer.bidder,
                                   body=notification_body,
                                   ntype="rejected-offer",
                                   item=item.key.id(),
                                   item_category=item.category,
-                                  noticed=False)
+                                  noticed=False,
+                                  link="/browse_item/"+str(item.key.id()))
         notification.put()
         return "success"
 
@@ -399,16 +443,23 @@ def offers(offer_id) :
         offer.put()
         offers=Offer.query(Offer.item==item.key.id(),Offer.bidder!=offer.bidder)
         for temp_offer in offers :
-            notification_body=item.name+" was sold to someone else."
+            notification_body=item.name+" sold"
             notification=Notification(user=offer.bidder,
                                   body=notification_body,
                                   ntype="item-sold",
                                   item=item.key.id(),
                                   item_category=item.category,
-                                  noticed=False)
+                                  noticed=False,
+                                  link="/browse/"+str(item.category))
             notification.put()
             temp_offer.key.delete()
+        conversation=Conversation.query(Conversation.item==item.key.id()).get()
+        if conversation :
+            conversation.key.delete()
         return "Offer confirmed"
+    if request.form["reason"]=="remove" :
+        offer.key.delete()
+        return "Offer removed"
     return "uninformative error", 404
 
 
@@ -417,7 +468,7 @@ def view_conversations() :
     if not session.get("logged_in"):
         return login()
 
-    conversations=Conversation.query(ndb.OR(Conversation.user1==session["user_id"],Conversation.user2==session["user_id"])).order(Conversation.time)
+    conversations=Conversation.query(ndb.OR(Conversation.user1==session["user_id"],Conversation.user2==session["user_id"])).order(-Conversation.time)
 
     notifications=Notification.query(Notification.user==session["user_id"]).order(-Notification.time)
 
@@ -430,9 +481,20 @@ def messages() :
         return login()
 
     conversation=Conversation.get_by_id(int(request.form["conversation"]))
+    conversation.put()
     recipient=conversation.user1
     if session["user_id"]==recipient :
         recipient=conversation.user2
+    print "popopo"
+    notification=Notification(user=conversation.user1,
+                                  body="New Message",
+                                  ntype="new-message",
+                                  item=conversation.item,
+                                  item_category="",
+                                  noticed=False,
+                                  link="/view_conversations/"+str(conversation.key.id()))
+    notification.put()
+    print "pop-"+notification.body+"-pop"
 
     message=Message(sender=session["user_id"],
                     recipient=recipient,
@@ -479,6 +541,8 @@ def my_item(item_id) :
             tags=request.form["tags"].split(" ")
 
             for tag in tags :
+                if tag=="" :
+                    continue
                 tag=tag.strip().lower()
                 exists=Tag.get_by_id(tag)
 
@@ -579,6 +643,7 @@ def my_item(item_id) :
     tags=Item_Tag.query(Item_Tag.item==item_id)
     notifications=Notification.query(Notification.user==session["user_id"]).order(-Notification.time)
 
+
     return render_template("view_my_item.html", 
                             offers=offers,
                             item=item,
@@ -592,7 +657,7 @@ def browse(category_id) :
     if not session.get("logged_in"):
         return login()
 
-    items=Item.query(Item.category==category_id)
+    items=Item.query(Item.category==category_id, Item.sold==False)
 
     for item in items :
         item.item_id=item.key.id()
@@ -689,20 +754,23 @@ def browse_item(item_id) :
                     amount=amount,
                     bidder_name=session["first_name"]+" "+session["last_name"],
                     accepted=False,
-                    confirmed=False)
+                    confirmed=False,
+                    item_name=item.name)
         offer.put()
 
         if item.biddable:
             item.update_best_offer(amount)
 
 
-
+        notification_body="Offer made on "+item.name+"for $"+str(offer.amount)
         notification=Notification(user=item.seller_id,
                                   body=notification_body,
-                                  ntype="item-removed",
+                                  ntype="item-offer",
                                   item=item.key.id(),
                                   item_category=item.category,
-                                  noticed=False)
+                                  noticed=False,
+                                  link="/my_items/"+str(item.key.id()))
+        notification.put()
 
         fields=[]
         fields.append(Field(name="message", 
@@ -949,7 +1017,7 @@ def signed_up(user) :
 
 @app.route('/signup', methods=['GET','POST'])
 def signup():
-
+    return login()
     fields=[]
     fields.append(Field(name="email", 
                     title="Email", 
@@ -994,9 +1062,12 @@ def page_not_found(e):
     return 'Sorry, Nothing at this URL.', 404
 
 
+# @app.errorhandler(Exception)
+# def application_error(e):
+#     """Return a custom 500 error."""
+#     return render_template("error_page.html")
 @app.errorhandler(500)
 def application_error(e):
     """Return a custom 500 error."""
-    return 'Sorry, unexpected error: {}'.format(e), 500
-
+    return render_template("error_page.html")
 

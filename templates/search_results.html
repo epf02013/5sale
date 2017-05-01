@@ -45,9 +45,15 @@
           <span class="caret"></span></a>
           <ul class="dropdown-menu">
             {%for notification in notifications%}
-              <li><a href="/notifications/{{notification.key.id()}}">{{notification.body}}</a></li>
+              {{notification.display()}}
             {%endfor%}
           </ul>
+        </li>
+        <li>
+          <a href="/me">ME</a>
+        </li>
+        <li>
+          <a href="/logout">Logout</a>
         </li> 
       </ul>
     </div>

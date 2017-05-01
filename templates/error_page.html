@@ -27,9 +27,9 @@
     </div>
     <div class="navbar-collapse collapse navbar-responsive-collapse">
       <ul class="nav navbar-nav navbar-right">
-        <li><a href="/home"><span>Browse</span></a></li>
+        <li class="active"><a href="/home"><span>Browse</span></a></li>
         <li><a href="/my_items">My Items</a></li> 
-        <li class="active"><a href="/post_item">Post Item</a></li> 
+        <li><a href="/post_item">Post Item</a></li>
         <li><a href="/view_conversations"> <i class="material-icons">message</i></a></li>
         <li class="dropdown">
           <a class="dropdown-toggle" data-toggle="dropdown" href="#">Notifications
@@ -54,12 +54,12 @@
 
 <div class="container-fluid">
   <div class="row">
-    <div class="col-xs-3" align="center"></div>
-    <div class="col-xs-6" align="center">
-      {%from 'forms.html' import form as form%}
-      {{form(item_form.fields,item_form.error, item_form.title, "", item_form.submit)}}
+    <div class="col-xs-2" align="center"></div>
+    <div class="col-xs-8" align="center">
+      <h1>Oops?</h1>
+      <h1 style="font-size: 60px; color:#3C91E6;"><i style="font-size: 200px;" class="material-icons">error_outline</i></h1>
     </div>
-    <div class="col-xs-3" align="center"></div>
+    <div class="col-xs-2" align="center"></div>
   </div>
   
 </div>

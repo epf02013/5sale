@@ -1,15 +1,5 @@
 <li>
-<a 
-{%if notification.ntype=="accepted-offer"%}
-	href="/browse/{{notification.item_category}}/{{notification.item}}"
-{%elif notification.ntype=="item-removed"%}
-	href="/browse/{{notification.item_category}}"
-{%elif notification.ntype=="offer-rejected"%}
-	href="/browse/{{notification.item_category}}"
-href="/browse/{{notification.item_category}}"
-
-{%endif%}
->
+<div class="clickable list-div" data-link="{{notification.link}}">
 {{notification.body}}	
-</a>
+</div>
 </li>

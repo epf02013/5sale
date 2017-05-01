@@ -1,7 +1,9 @@
 $("#menu").on("click",function() {
 		$(this).toggleClass("selected");
 });
-
+$(".list-div").on("click", function(e){
+    $(location).attr('href', $(this).data("link"));
+  });
 $(window).resize(function() {
 	$(".nav-spacer").height($(".navbar-header").height());
 	$(".category").height($(".category").width());
@@ -29,6 +31,20 @@ function remove_review(review_id) {
             {reason:"remove"},
             function(data, status){
             	$("#review_"+review_id).remove();
+    });
+}
+function remove_offer(offer_id) {
+	$.post("/offers/"+offer_id,
+            {reason:"remove"},
+            function(data, status){
+            	$("#offer_"+offer_id).remove();
+    });
+}
+function clear_notifications() {
+	$.post("/clear_notifications",
+            {reason:"remove"},
+            function(data, status){
+            	$("#offer_"+offer_id).remove();
     });
 }
 

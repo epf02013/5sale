@@ -6,11 +6,27 @@
 	width: 100%;
 	z-index: 200;
 }
+.list-div {
+	border-bottom-style: solid;
+	border-bottom-color: gray;
+	border-bottom-width: 1px;
+	font-size: 14px;
+	padding:5px;
+	padding-top: 5px;
+	padding-bottom: 5px;
+}
+.list-div:hover {
+	background-color: rgba(230, 230, 230,.8);
+		color:#00a878;
+}
+
 .dropdown-menu>li>a{
 	font-size: 10px !important;
 }
 .dropdown-menu {
-	max-width: 15%;
+	max-width: 30%;
+	max-height: 400px;
+	overflow-y: auto;
 	white-space: normal;
 }
 
@@ -50,6 +66,7 @@
 	padding: 10px;
 	width:30%;
 	min-width: 300px;
+	min-height: 250px;
 }
 .conversation{
 	width: 30%;
